@@ -1,3 +1,39 @@
+/*
+ * Course: Master Esp32 Web Servers
+ * Platform: ESP32
+ * Author: Ashraf S A AlMadhoun
+ * 
+ * Description:
+ * This code demonstrates the core concepts taught in the "Master Esp32 Web Servers" course.
+ * It provides a practical implementation that students can study, modify, and
+ * use as a foundation for their own projects.
+ * 
+ * Learning Objectives:
+ * - Understand the fundamental principles covered in this course
+ * - Practice implementing the concepts with real code
+ * - Build a working example that can be extended
+ * 
+ * Hardware Requirements:
+ * - Development board (ESP32)
+ * - Components as specified in CIRCUIT.md
+ * - USB cable for programming
+ * 
+ * Pin Connections:
+ * Refer to CIRCUIT.md for detailed wiring diagrams and pin assignments.
+ * 
+ * Usage:
+ * 1. Review the code structure and comments
+ * 2. Connect hardware according to CIRCUIT.md
+ * 3. Upload code to your development board
+ * 4. Monitor serial output for debugging
+ * 
+ * Course Link: https://www.udemy.com/course/master-esp32-web-servers/
+ * Repository: https://github.com/engasm89/master-esp32-web-servers
+ * 
+ * Copyright (c) 2025 Ashraf S A AlMadhoun
+ * Licensed under MIT License
+ */
+
 #include "freertos/FreeRTOS.h" // FreeRTOS core
 #include "freertos/task.h" // Task APIs
 #include "driver/gpio.h" // GPIO control
@@ -53,5 +89,5 @@ void app_main(void) { // Application entry
   ESP_LOGI(TAG, "Starting web server"); // Log start
   (void)start_webserver(); // Start HTTP server
   while (true) { vTaskDelay(pdMS_TO_TICKS(1000)); } // Keep running
-} // End app_main
+} // End of main function
 
