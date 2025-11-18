@@ -10,7 +10,8 @@ static const char *TAG = "WEB"; // Log tag
 static int led_state = 0; // LED state cache
 
 static esp_err_t root_get_handler(httpd_req_t *req) { // HTTP GET handler for root
-  const char *resp = led_state ? "LED: ON" : "LED: OFF"; // Prepare response text
+  const char *resp = led_state ? "LED: ON\nUse /toggle to switch, /state to query" : "LED: OFF\nUse /toggle to switch, /state to query"; // Prepare response text
+  httpd_resp_set_type(req, "text/plain"); // Set content type
   httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN); // Send response
   return ESP_OK; // Indicate success
 } // End handler
@@ -18,7 +19,16 @@ static esp_err_t root_get_handler(httpd_req_t *req) { // HTTP GET handler for ro
 static esp_err_t toggle_get_handler(httpd_req_t *req) { // HTTP GET handler to toggle LED
   led_state = !led_state; // Flip LED state
   gpio_set_level(LED_GPIO, led_state); // Apply new state to GPIO
-  httpd_resp_send(req, "Toggled", HTTPD_RESP_USE_STRLEN); // Send response
+  httpd_resp_set_type(req, "application/json"); // JSON response
+  const char *ok = led_state ? "{\"led\":1}" : "{\"led\":0}"; // Build JSON
+  httpd_resp_send(req, ok, HTTPD_RESP_USE_STRLEN); // Send response
+  return ESP_OK; // OK
+} // End handler
+
+static esp_err_t state_get_handler(httpd_req_t *req) { // Report LED state
+  httpd_resp_set_type(req, "application/json"); // JSON
+  const char *body = led_state ? "{\"led\":1}" : "{\"led\":0}"; // Body
+  httpd_resp_send(req, body, HTTPD_RESP_USE_STRLEN); // Send
   return ESP_OK; // OK
 } // End handler
 
@@ -30,6 +40,8 @@ static httpd_handle_t start_webserver(void) { // Start HTTP server
     httpd_register_uri_handler(server, &root); // Register root
     httpd_uri_t toggle = { .uri = "/toggle", .method = HTTP_GET, .handler = toggle_get_handler, .user_ctx = NULL }; // Toggle route
     httpd_register_uri_handler(server, &toggle); // Register toggle
+    httpd_uri_t state = { .uri = "/state", .method = HTTP_GET, .handler = state_get_handler, .user_ctx = NULL }; // State route
+    httpd_register_uri_handler(server, &state); // Register state
   } // End if
   return server; // Return server handle
 } // End start_webserver
